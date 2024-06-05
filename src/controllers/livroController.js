@@ -7,7 +7,7 @@ class LivroController{
         try{
 
             const listaLivros = await livro.find({});
-            res.status(200).send(listaLivros);
+            res.status(200).json(listaLivros);
 
         } catch(err){
             res.status(500).json({ message: `Houve um erro interno na listagem dos livros: ${err.message}`});
@@ -24,7 +24,7 @@ class LivroController{
         }
     }
 
-    static async PostLivros(req, res){
+    static async CreateLivro(req, res){
 
         try{
             const novoLivro = await livro.create(req.body);
