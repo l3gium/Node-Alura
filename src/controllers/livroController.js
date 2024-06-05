@@ -1,5 +1,5 @@
 import livro from "../models/Livro.js";
-
+import { autor } from "../models/Autor.js"
 
 class LivroController{
 
@@ -26,12 +26,15 @@ class LivroController{
 
     static async CreateLivro(req, res){
 
+        const novoLivro = req.body;
         try{
-            const novoLivro = await livro.create(req.body);
+            const autorEncontrado = await autor.findById(novoLivro.autor);
+            const livroCompleto = {...novoLivro, autor: {...autorEncontrado._doc}};
+            const livroCriado = await livro.create(livroCompleto);
             res.status(201).
             json({ 
                     message: "Livro criado com sucesso", 
-                    livro: novoLivro
+                    livro: livroCriado
             });
         } catch(err){
             res.status(500).json({ message: `Houve um erro interno ao cadastrar livro: ${err.message}`});
@@ -57,6 +60,16 @@ class LivroController{
 
         } catch(err){
             res.status(500).json({ message: `Houve um erro interno ao deletar o livro: ${err.message}`});
+        }
+    }
+
+    static async GetLivrosByEditora(req, res){
+        const editora = req.query.editora;
+        try {
+            const livrosPorEditora = await livro.find({ editora: editora });
+            res.status(200).json(livrosPorEditora);
+        } catch(err){
+            res.status(500).json({ message: `Houve um erro interno ao encontrar os livros: ${err.message}`});
         }
     }
 };
